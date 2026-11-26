@@ -21,3 +21,10 @@ The trade-off is that deduplication is destructive to the path-to-inode mapping.
 ## Edge cases
 
 Symlinks and directories are skipped. Files smaller than `minSize` (default `1` byte) are ignored, which lets you skip empty files that are cheap to store and often not worth linking. If a file disappears between scanning and deduplication, `deduplicate` records an error for that path and continues with the rest of the group rather than aborting the whole run.
+
+## Performance
+
+The window keeps a bounded buffer, so `push` is constant time and memory does not
+grow with the length of the stream. `peak` and `trough` are linear in the window
+size, which is the trade that keeps `push` cheap.
+
